@@ -63,7 +63,7 @@ class UserController {
 
     const user = await User.findByPk(req.currentUserId);
 
-    if (email !== user.email) {
+    if (email && email !== user.email) {
       const userExists = await User.findOne({
         where: {
           email,
@@ -83,11 +83,10 @@ class UserController {
     }
 
     const { id, name, provider } = await user.update(req.body);
-
     return res.json({
       id,
       name,
-      email,
+      email: email || user.email,
       provider,
     });
   }

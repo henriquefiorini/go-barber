@@ -34,6 +34,7 @@ class SessionController {
         error: 'Email and/or password are incorrect.',
       });
     }
+
     const { id, name } = user;
     return res.json({
       user: {
