@@ -26,12 +26,18 @@ class NotificationController {
   }
 
   async update(req, res) {
-    const notification = await Notification.findByIdAndUpdate(
-      req.params.id,
-      { read: true },
-      { new: true }
-    );
-    return res.json(notification);
+    try {
+      const notification = await Notification.findByIdAndUpdate(
+        req.params.id,
+        { read: true },
+        { new: true }
+      );
+      return res.json(notification);
+    } catch (err) {
+      return res.status(400).json({
+        error: 'Invalid identifier.',
+      });
+    }
   }
 }
 
