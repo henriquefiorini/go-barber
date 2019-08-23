@@ -10,6 +10,7 @@ import UserController from './app/controllers/UserController';
 import ProviderController from './app/controllers/ProviderController';
 import AppointmentController from './app/controllers/AppointmentController';
 import ScheduleController from './app/controllers/ScheduleController';
+import NotificationController from './app/controllers/NotificationController';
 import FileController from './app/controllers/FileController';
 
 const routes = new Router();
@@ -26,6 +27,8 @@ routes.get('/appointments', authMiddleware, AppointmentController.list);
 routes.post('/appointments', authMiddleware, AppointmentController.create);
 
 routes.get('/schedule', authMiddleware, ScheduleController.list);
+
+routes.get('/notifications', authMiddleware, NotificationController.list);
 
 routes.post(
   '/files',

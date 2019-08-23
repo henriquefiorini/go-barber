@@ -59,6 +59,13 @@ class AppointmentController {
       });
     }
 
+    // Validate if user is not creating an appointment with itself
+    if (req.currentUserId === provider_id) {
+      return res.status(400).json({
+        error: 'You cannot create an appointment with yourself.',
+      });
+    }
+
     // Validate "provider_id" as a provider
     const isProvider = await User.findOne({
       where: {
@@ -104,7 +111,7 @@ class AppointmentController {
     // Notify provider
     const formattedDate = format(
       startTime,
-      "'dia' dd 'de' MMMM', às' M:mm'h'",
+      "'dia' dd 'de' MMMM', às' H:mm'h'",
       { locale: pt }
     );
     await Notification.create({
