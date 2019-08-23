@@ -1,9 +1,11 @@
 import * as Yup from 'yup';
-import { startOfHour, parseISO, isBefore } from 'date-fns';
+import { parseISO, format, startOfHour, isBefore } from 'date-fns';
+import pt from 'date-fns/locale/pt';
 
 import Appointment from '../models/Appointment';
 import User from '../models/User';
 import File from '../models/File';
+import Notification from '../schemas/Notification';
 
 class AppointmentController {
   async list(req, res) {
@@ -49,6 +51,14 @@ class AppointmentController {
 
     const { provider_id, date } = req.body;
 
+    // Get current user
+    const user = await User.findByPk(req.currentUserId);
+    if (!user) {
+      return res.status(401).json({
+        error: 'You must be logged in to view this resource.',
+      });
+    }
+
     // Validate "provider_id" as a provider
     const isProvider = await User.findOne({
       where: {
@@ -58,7 +68,7 @@ class AppointmentController {
     });
     if (!isProvider) {
       return res.status(401).json({
-        error: 'Must create appointments with provider profiles only.',
+        error: 'You must create appointments with provider profiles only.',
       });
     }
 
@@ -66,7 +76,7 @@ class AppointmentController {
     const startTime = startOfHour(parseISO(date));
     if (isBefore(startTime, new Date())) {
       return res.status(400).json({
-        error: 'Mut not inform past dates.',
+        error: 'You must not inform past dates.',
       });
     }
 
@@ -84,10 +94,22 @@ class AppointmentController {
       });
     }
 
+    // Create appointment
     const appointment = await Appointment.create({
       user_id: req.currentUserId,
       provider_id,
       date,
+    });
+
+    // Notify provider
+    const formattedDate = format(
+      startTime,
+      "'dia' dd 'de' MMMM', às' M:mm'h'",
+      { locale: pt }
+    );
+    await Notification.create({
+      content: `Novo agendamento de ${user.name} no ${formattedDate}`,
+      user: provider_id,
     });
     return res.json(appointment);
   }
