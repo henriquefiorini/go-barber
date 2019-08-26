@@ -35,7 +35,7 @@ class NotificationController {
       return res.json(notification);
     } catch (err) {
       return res.status(400).json({
-        error: 'Invalid identifier.',
+        error: 'Invalid request.',
       });
     }
   }
