@@ -14,7 +14,7 @@ class ScheduleController {
       },
     });
     if (!isProvider) {
-      res.status(401).json({
+      return res.status(401).json({
         error: 'You are not allowed to view this resource.',
       });
     }
